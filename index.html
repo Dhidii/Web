@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Sukiify & Untoldy</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* =========================================
+         1. MAIN APP STYLES (SUKIIFY)
+         ========================================= */
+      :root {
+        --bg-main: #05000a;
+        --bg-gradient-top: #1a0036;
+        --bg-gradient-btm: #0a0014;
+        --accent-color: #b26bf5;
+        --accent-glow: #7b2cbf;
+        --secondary-color: #4cc9f0;
+        --text-primary: #ffffff;
+        --text-secondary: #d6bcfa;
+        --glass-bg: rgba(255, 255, 255, 0.03);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --nav-bg: rgba(10, 0, 20, 0.85);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        font-family: "Circular Std", -apple-system, sans-serif;
+        background-color: var(--bg-main);
+        color: var(--text-primary);
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+      }
+
+      .app-container {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          180deg,
+          var(--bg-gradient-top) 0%,
+          var(--bg-gradient-btm) 100%
+        );
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Aurora Animation */
+      .aurora-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.6;
+        z-index: 0;
+        animation: floatBlob 10s infinite alternate ease-in-out;
+      }
+      .blob-1 {
+        top: -10%;
+        left: -20%;
+        width: 300px;
+        height: 300px;
+        background: var(--accent-glow);
+        animation-delay: 0s;
+      }
+      .blob-2 {
+        bottom: -10%;
+        right: -20%;
+        width: 250px;
+        height: 250px;
+        background: var(--secondary-color);
+        animation-delay: -5s;
+      }
+      .blob-3 {
+        top: 40%;
+        left: 30%;
+        width: 150px;
+        height: 150px;
+        background: #f72585;
+        opacity: 0.4;
+        filter: blur(60px);
+        animation-duration: 15s;
+      }
+      @keyframes floatBlob {
+        0% {
+          transform: translate(0, 0) scale(1);
+        }
+        100% {
+          transform: translate(30px, 50px) scale(1.1);
+        }
+      }
+
+      /* View Management */
+      .view-section {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+          transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 10;
+        background: transparent;
+      }
+
+      .hidden {
+        opacity: 0;
+        pointer-events: none !important;
+        z-index: -1 !important;
+        transform: scale(1.05);
+        filter: blur(10px);
+        visibility: hidden;
+      }
+
+      /* MAIN MENU STYLES */
+      #main-menu-view {
+        justify-content: center;
+        align-items: center;
+        padding: 30px;
+        background: rgba(5, 0, 10, 0.3);
+        backdrop-filter: blur(5px);
+        padding-bottom: 20vh;
+        z-index: 20;
+      }
+      .menu-wrapper {
+        width: 100%;
+        max-width: 340px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 50px;
+        position: relative;
+        z-index: 30;
+      }
+      .big-logo {
+        text-align: center;
+        position: relative;
+      }
+      .big-logo h1 {
+        font-size: 56px;
+        font-weight: 900;
+        letter-spacing: -2px;
+        line-height: 1;
+        margin: 0;
+        background: linear-gradient(135deg, #fff 30%, var(--accent-color) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 0 20px rgba(178, 107, 245, 0.4));
+      }
+      .big-logo .subtitle {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        margin-top: 10px;
+        display: block;
+        font-weight: 600;
+      }
+      .menu-buttons {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .menu-card {
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.05) 0%,
+          rgba(255, 255, 255, 0.02) 100%
+        );
+        border: 1px solid var(--glass-border);
+        padding: 20px;
+        border-radius: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        backdrop-filter: blur(10px);
+        z-index: 100;
+      }
+      .menu-card:active {
+        transform: scale(0.96);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .menu-card.highlight {
+        background: linear-gradient(
+          90deg,
+          rgba(178, 107, 245, 0.15) 0%,
+          rgba(178, 107, 245, 0.05) 100%
+        );
+        border-color: rgba(178, 107, 245, 0.3);
+        box-shadow: 0 10px 30px -10px rgba(178, 107, 245, 0.3);
+      }
+      .menu-content {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        pointer-events: none;
+      }
+      .menu-icon-box {
+        width: 45px;
+        height: 45px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
+      .highlight .menu-icon-box {
+        background: var(--accent-color);
+        color: white;
+        box-shadow: 0 0 15px var(--accent-glow);
+      }
+      .menu-text h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 2px;
+      }
+      .menu-text p {
+        font-size: 12px;
+        color: var(--text-secondary);
+        opacity: 0.8;
+      }
+      .menu-arrow {
+        opacity: 0.3;
+        transition: 0.3s;
+      }
+      .menu-card:active .menu-arrow {
+        opacity: 1;
+        transform: translateX(5px);
+      }
+
+      /* Animation */
+      .menu-card {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s forwards;
+      }
+      .menu-card:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .menu-card:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      @keyframes fadeInUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* HOME & PLAYLIST COMMON */
+      .home-navbar,
+      .top-navbar {
+        width: 100%;
+        padding: 45px 0 15px 0;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.9) 0%,
+          rgba(0, 0, 0, 0) 100%
+        );
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 20;
+        flex-shrink: 0;
+      }
+      .brand-clickable {
+        cursor: pointer;
+        transition: 0.2s;
+        z-index: 50;
+      }
+      .brand-clickable:active {
+        transform: scale(0.95);
+        opacity: 0.8;
+      }
+      .home-brand-title,
+      .top-nav-title {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-shadow: 0 0 20px rgba(178, 107, 245, 0.5);
+      }
+      .title-sukii {
+        color: var(--accent-color);
+      }
+      .title-fy {
+        color: var(--text-primary);
+      }
+
+      /* Home Specific */
+      .home-scroll-content {
+        flex: 1;
+        overflow-y: auto;
+        padding-top: 10px;
+        padding-bottom: 100px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .home-header-text {
+        padding: 10px 25px 20px 25px;
+      }
+      .greeting-title {
+        font-size: 28px;
+        font-weight: 800;
+        line-height: 1.2;
+        background: linear-gradient(90deg, #fff, #d6bcfa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      /* Slider */
+      .slider-container {
+        width: 100%;
+        padding: 10px 25px 40px 25px;
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+      .slider-container::-webkit-scrollbar {
+        display: none;
+      }
+      .slide-card {
+        min-width: 300px;
+        width: 300px;
+        height: 300px;
+        border-radius: 24px;
+        position: relative;
+        overflow: hidden;
+        scroll-snap-align: center;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        transition: transform 0.2s;
+        cursor: pointer;
+        background-color: #222;
+      }
+      .slide-card:active {
+        transform: scale(0.98);
+      }
+      .slide-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 0;
+      }
+      .card-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
+        padding: 25px;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        height: 60%;
+      }
+      .card-content h3 {
+        font-size: 22px;
+        font-weight: 800;
+        margin-bottom: 5px;
+        color: white;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .card-content p {
+        font-size: 14px;
+        color: var(--accent-color);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      /* CTA */
+      .home-actions {
+        padding: 0 25px;
+        margin-top: 20px;
+        padding-bottom: 120px;
+      }
+      .cta-card {
+        width: 100%;
+        height: 80px;
+        background: linear-gradient(90deg, #7b2cbf, #b26bf5);
+        border-radius: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 25px;
+        color: white;
+        box-shadow: 0 10px 25px rgba(123, 44, 191, 0.4);
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        overflow: hidden;
+      }
+      .cta-card:active {
+        transform: scale(0.98);
+        box-shadow: 0 5px 15px rgba(123, 44, 191, 0.3);
+      }
+      .cta-text h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .cta-text p {
+        font-size: 12px;
+        opacity: 0.9;
+        font-weight: 500;
+      }
+      .cta-icon {
+        background: rgba(255, 255, 255, 0.2);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(5px);
+      }
+
+      /* Player View */
+      .player-section {
+        padding: 10px 30px 10px 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-shrink: 0;
+        z-index: 2;
+      }
+      .album-art {
+        width: 100%;
+        max-width: 260px;
+        aspect-ratio: 1 / 1;
+        background-color: #1a002a;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        margin-bottom: 20px;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+      }
+      .album-art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+      }
+      .album-art.playing img {
+        transform: scale(1.05);
+      }
+      .song-info {
+        width: 100%;
+        max-width: 260px;
+        text-align: left;
+        margin-bottom: 15px;
+      }
+      .song-title {
+        font-size: 22px;
+        font-weight: 800;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--text-primary);
+      }
+      .artist-name {
+        font-size: 15px;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+      .progress-container {
+        width: 100%;
+        max-width: 260px;
+        margin-bottom: 10px;
+      }
+      .progress-bar {
+        width: 100%;
+        height: 4px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        position: relative;
+        cursor: pointer;
+      }
+      .progress-fill {
+        width: 0%;
+        height: 100%;
+        background-color: var(--text-primary);
+        border-radius: 2px;
+        position: relative;
+        transition: width 0.1s linear;
+      }
+      .time-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: var(--text-secondary);
+        margin-top: 6px;
+        font-weight: 500;
+      }
+      .controls {
+        width: 100%;
+        max-width: 260px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+      }
+      .btn-control {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-secondary);
+        transition: transform 0.1s;
+      }
+      .btn-control:hover {
+        color: white;
+      }
+      .btn-play {
+        width: 60px;
+        height: 60px;
+        background-color: var(--accent-color);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        box-shadow: 0 8px 20px rgba(178, 107, 245, 0.4);
+        transition: all 0.2s;
+      }
+
+      .playlist-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        margin-top: 15px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        background: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0) 0%,
+          rgba(0, 0, 0, 0.5) 100%
+        );
+      }
+      .playlist-label {
+        padding: 15px 30px 10px 30px;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      .playlist-section {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 20px 180px 20px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .playlist-section::-webkit-scrollbar {
+        display: none;
+      }
+      .playlist-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-radius: 12px;
+        cursor: pointer;
+        margin-bottom: 8px;
+        transition: background 0.2s;
+      }
+      .playlist-item:hover {
+        background-color: rgba(155, 93, 229, 0.1);
+      }
+      .playlist-item.active {
+        background-color: rgba(155, 93, 229, 0.2);
+        border: 1px solid rgba(178, 107, 245, 0.3);
+      }
+      .playlist-item.active .track-title {
+        color: var(--accent-color);
+        font-weight: 700;
+      }
+      .playlist-item.active .thumb-small {
+        box-shadow: 0 0 0 2px var(--accent-color);
+      }
+      .playing-indicator {
+        display: none;
+        width: 15px;
+        height: 15px;
+        margin-left: auto;
+        fill: var(--accent-color);
+      }
+      .playlist-item.active .playing-indicator {
+        display: block;
+      }
+      .playlist-item.active .track-duration {
+        display: none;
+      }
+      .thumb-small {
+        width: 48px;
+        height: 48px;
+        background-color: #333;
+        margin-right: 15px;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .thumb-small img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .track-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .track-title {
+        font-size: 14px;
+        color: var(--text-primary);
+        margin-bottom: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 500;
+      }
+      .track-artist {
+        font-size: 12px;
+        color: var(--text-secondary);
+      }
+      .track-duration {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-left: 10px;
+      }
+
+      /* Bottom Nav */
+      .navbar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        background-color: var(--nav-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        display: flex;
+        justify-content: space-evenly;
+        align-items: flex-start;
+        padding-top: 15px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 9999;
+        padding-bottom: env(safe-area-inset-bottom);
+        transition: transform 0.4s ease;
+        transform: translateY(100%);
+      }
+      .navbar.visible {
+        transform: translateY(0);
+      }
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: rgba(255, 255, 255, 0.4);
+        cursor: pointer;
+        width: 60px;
+        transition: transform 0.2s;
+      }
+      .nav-item:active {
+        transform: scale(0.9);
+      }
+      .nav-icon {
+        margin-bottom: 5px;
+      }
+      .nav-text {
+        font-size: 10px;
+        font-weight: 600;
+      }
+      .nav-item.active {
+        color: var(--text-primary);
+      }
+      .nav-item.active .nav-icon svg {
+        fill: var(--text-primary);
+        filter: drop-shadow(0 0 5px var(--accent-color));
+      }
+      svg {
+        fill: currentColor;
+        display: block;
+      }
+
+      /* =========================================
+         2. UNTOLDY STYLES (SCOPED)
+         ========================================= */
+
+      #untoldy-view {
+        background: #1c1c1c;
+        color: #fff;
+        font-family: "Segoe UI", sans-serif;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      /* Background Image for Untoldy */
+      .untold-bg-image {
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(
+            rgba(20, 20, 20, 0.55),
+            rgba(20, 20, 20, 0.65)
+          ),
+          url("bg.jpg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: 0;
+        filter: sepia(0.25) contrast(1.05) brightness(0.95);
+        pointer-events: none;
+      }
+
+      /* Untold Nav */
+      .untold-nav {
+        position: relative;
+        top: 0;
+        width: 100%;
+        padding: 26px 32px;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(18px);
+        display: flex;
+        align-items: center;
+        z-index: 100;
+        cursor: default;
+      }
+
+      /* Header with Back Arrow style */
+      .untold-nav h2 {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        font-weight: 600;
+        letter-spacing: 2px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      /* Content Section */
+      .untold-section {
+        position: relative;
+        z-index: 1;
+        min-height: calc(100vh - 80px);
+        padding: 24px 6% 24px;
+        overflow-y: auto;
+        padding-bottom: 40px;
+      }
+
+      .untold-glass {
+        background: rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(20px);
+        border-radius: 26px;
+        padding: 32px 26px;
+        max-width: 900px;
+        margin: auto;
+        animation: fadeUp 0.9s ease;
+      }
+
+      #untoldy-view h1 {
+        font-size: 2.2rem;
+        font-family: "Satisfy", cursive;
+        margin-bottom: 14px;
+        text-align: center;
+        background: none;
+        -webkit-text-fill-color: #fff;
+        filter: none;
+        letter-spacing: normal;
+        line-height: normal;
+        font-weight: normal;
+      }
+
+      #untoldy-view p {
+        line-height: 2.05;
+        opacity: 0.9;
+        font-size: 1rem;
+        color: #fff;
+        font-weight: normal;
+        letter-spacing: normal;
+        text-transform: none;
+      }
+
+      /* Slider Styles */
+      .untold-slider {
+        margin-top: 26px;
+      }
+      .note-slide {
+        display: none;
+        animation: fadeSlide 0.45s ease;
+      }
+      .note-slide.active {
+        display: block;
+      }
+      .note-date {
+        font-size: 0.8rem;
+        opacity: 0.65;
+        margin-bottom: 6px;
+      }
+      .note-title {
+        font-size: 1.25rem;
+        margin-bottom: 10px;
+        font-weight: 600;
+      }
+      .note-desc {
+        margin-bottom: 16px;
+        text-align: center;
+      }
+
+      .cta-wrapper {
+        display: flex;
+        justify-content: center;
+      }
+      .cta-btn-untold {
+        padding: 12px 22px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #fff;
+        text-decoration: none;
+        background: rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        transition: all 0.3s ease;
+      }
+      .cta-btn-untold:hover {
+        background: rgba(255, 255, 255, 0.28);
+        transform: translateY(-2px);
+      }
+
+      .slider-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 26px;
+      }
+
+      /* Music Overlay */
+      .music-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        cursor: pointer;
+        animation: fadeInOverlay 0.6s ease;
+      }
+      .overlay-content {
+        color: white;
+        font-size: 1.2rem;
+      }
+
+      @keyframes fadeInOverlay {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Music Wrapper Inside Untold - RELATIVE */
+      .music-wrapper-untold {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        position: relative;
+        pointer-events: auto;
+      }
+
+      .spotify-card-wide {
+        width: 100%;
+        max-width: 900px;
+        background: #121212;
+        border-radius: 22px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+        pointer-events: auto;
+      }
+
+      /* Untold Player Specifics */
+      .untold-album-cover img {
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+        object-fit: cover;
+      }
+      .untold-song-center {
+        flex: 1;
+      }
+      .untold-song-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #fff;
+      }
+      .untold-song-artist {
+        font-size: 0.75rem;
+        opacity: 0.6;
+        margin-bottom: 8px;
+        color: #fff;
+      }
+      .untold-progress-bar {
+        width: 100%;
+        height: 4px;
+        background: #2a2a2a;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .untold-progress {
+        width: 0%;
+        height: 100%;
+        background: #1db954;
+      }
+      .untold-song-duration {
+        font-size: 0.75rem;
+        opacity: 0.6;
+        white-space: nowrap;
+        color: #fff;
+      }
+
+      .nav-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.25);
+        border: none;
+        color: #fff;
+        font-size: 1.3rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.25s;
+      }
+      .nav-btn:active {
+        transform: scale(0.9);
+      }
+
+      .dots {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.35);
+        transition: 0.3s;
+      }
+      .dot.active {
+        width: 18px;
+        border-radius: 10px;
+        background: #fff;
+      }
+
+      /* --- NEW: BACK BUTTON STYLES --- */
+      .btn-back-untold {
+        margin-top: 30px;
+        padding: 10px 24px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 30px;
+        color: #fff;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background 0.3s, transform 0.2s;
+        display: inline-block;
+      }
+      .btn-back-untold:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: scale(1.02);
+      }
+      .center-btn-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <div class="aurora-blob blob-1"></div>
+      <div class="aurora-blob blob-2"></div>
+      <div class="aurora-blob blob-3"></div>
+
+      <div id="main-menu-view" class="view-section">
+        <div class="menu-wrapper">
+          <div class="big-logo">
+            <h1>SUKIIFY</h1>
+          </div>
+
+          <div class="menu-buttons">
+            <div class="menu-card" onclick="switchTab('untoldy')">
+              <div class="menu-content">
+                <div class="menu-icon-box">📖</div>
+                <div class="menu-text">
+                  <h3>Untoldy</h3>
+                  <p>Untold Stories</p>
+                </div>
+              </div>
+              <div class="menu-arrow">➜</div>
+            </div>
+
+            <div class="menu-card highlight" onclick="switchTab('home')">
+              <div class="menu-content">
+                <div class="menu-icon-box">🎧</div>
+                <div class="menu-text">
+                  <h3>Sukiify</h3>
+                  <p>Listen now</p>
+                </div>
+              </div>
+              <div class="menu-arrow">➜</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="home-view" class="view-section hidden">
+        <div class="home-navbar">
+          <div
+            class="home-brand-title brand-clickable"
+            onclick="switchTab('main-menu')"
+          >
+            <span class="title-sukii">Sukii</span
+            ><span class="title-fy">fy</span>
+          </div>
+        </div>
+
+        <div class="home-scroll-content">
+          <div class="home-header-text">
+            <h1 class="greeting-title">
+              Haloo, Marsha!<br />
+              This Songs is For You.
+            </h1>
+          </div>
+
+          <div class="slider-container">
+            <div class="slide-card" onclick="playSpecificSong(0)">
+              <img src="gambar_1.jpg" alt="Cover 1" />
+              <div class="card-overlay">
+                <div class="card-content">
+                  <h3>Sempurna</h3>
+                  <p>Play Now</p>
+                </div>
+              </div>
+            </div>
+            <div class="slide-card" onclick="playSpecificSong(1)">
+              <img src="gambar_2.jpg" alt="Cover 2" />
+              <div class="card-overlay">
+                <div class="card-content">
+                  <h3>About You</h3>
+                  <p>Play Now</p>
+                </div>
+              </div>
+            </div>
+            <div class="slide-card" onclick="playSpecificSong(2)">
+              <img src="gambar_3.jpg" alt="Cover 3" />
+              <div class="card-overlay">
+                <div class="card-content">
+                  <h3>love.</h3>
+                  <p>Play Now</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="home-actions">
+            <div class="cta-card" onclick="switchTab('playlist')">
+              <div class="cta-text">
+                <h3>Playlist Marsha</h3>
+                <p>Dengarkan musik favoritmu</p>
+              </div>
+              <div class="cta-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="playlist-view" class="view-section hidden">
+        <div class="top-navbar">
+          <div
+            class="top-nav-title brand-clickable"
+            onclick="switchTab('main-menu')"
+          >
+            <span class="title-sukii">Sukii</span
+            ><span class="title-fy">fy</span>
+          </div>
+        </div>
+
+        <div class="player-section">
+          <div class="album-art" id="album-container">
+            <img src="" id="player-img" alt="Album" />
+          </div>
+          <div class="song-info">
+            <div class="song-title" id="player-title">Loading...</div>
+            <div class="artist-name" id="player-artist">Please wait</div>
+          </div>
+          <div class="progress-container" id="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="time-info">
+              <span id="current-time">0:00</span
+              ><span id="total-duration">0:00</span>
+            </div>
+          </div>
+          <div class="controls">
+            <button class="btn-control">
+              <svg width="20" height="20" viewBox="0 0 24 24">
+                <path
+                  d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"
+                />
+              </svg>
+            </button>
+            <button class="btn-control" id="btn-prev">
+              <svg width="28" height="28" viewBox="0 0 24 24">
+                <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+              </svg>
+            </button>
+            <button class="btn-control btn-play" id="btn-play">
+              <svg
+                id="icon-play"
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="white"
+              >
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              <svg
+                id="icon-pause"
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="white"
+                style="display: none"
+              >
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+              </svg>
+            </button>
+            <button class="btn-control" id="btn-next">
+              <svg width="28" height="28" viewBox="0 0 24 24">
+                <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+              </svg>
+            </button>
+            <button class="btn-control">
+              <svg width="20" height="20" viewBox="0 0 24 24">
+                <path
+                  d="M17 17H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-10-4h10v-3l4 4-4 4v-3H7v-6h2v4z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="playlist-container">
+          <div class="playlist-label" id="playlist-header">Songs For You</div>
+          <div class="playlist-section" id="playlist-content"></div>
+        </div>
+      </div>
+
+      <div id="untoldy-view" class="view-section hidden">
+        <div class="untold-bg-image"></div>
+
+        <div class="music-overlay" id="musicOverlay" style="display: none">
+          <div class="overlay-content">
+            <p>Tap Untuk Mulai</p>
+          </div>
+        </div>
+
+        <nav class="untold-nav">
+          <h2 onclick="switchTab('main-menu')" title="Back to Menu">
+            <span style="font-size: 1.2em; margin-right: 5px">&#8249;</span>
+            Hi, Marsha!
+          </h2>
+        </nav>
+
+        <section class="untold-section" id="notes">
+          <div class="untold-glass">
+            <h1>Untold Words</h1>
+
+            <div class="untold-slider">
+              <div class="note-slide active">
+                <div class="note-date">16 Desember 2025</div>
+                <div class="note-title">About My Feelings</div>
+                <p>
+                  Hi ngab suki, welkam tu mai channel, jangan lupa lek en
+                  subrek. Sebelumnya makasii yaa udah mau nyempetin buka website
+                  inii, dan maaf jugaa kalo jadi ganggu waktunya hehe.
+                </p>
+              </div>
+
+              <div class="note-slide">
+                <p>
+                  Jadi ginii..<br />
+                  Ada yang mau aku utarain nihh, sebenernya udah dari lamaa,
+                  cumaa aku bukan siapa siapa kamu juga kann, tapi daripada
+                  ngeganjel, mending aku speak up dehh wkwk anjay, GAPAPA KANN??
+                  AMAN YAA
+                </p>
+              </div>
+
+              <div class="note-slide">
+                <p>
+                  Jujur aja nihh yaa sampe sekarang sebenernya aku masih
+                  ngestuck di kamuu wkwk, udah cukup lama yaa 4 tahun kerasaa,
+                  dari tahun 2022 sampe sekarang udah mau 2026 perasaan itu
+                  masih samaa, dan ga berubah sedikit pun, meskipun keliatannya
+                  udah berubah, tapii sebenernya mah masih samaa wkwk, bedanya
+                  dulu aku berani nunjukin, tapi kalo sekarang aku cuma bisa
+                  nyimpen perasaan ini dalam diam. Dan sebenernya banyak yang
+                  mau aku sampaikan ke anda, tapii kayanya lebih baik aku simpen
+                  dulu, karena aku belum tau kedepannya bakal kaya gimanaa.
+                </p>
+              </div>
+
+              <div class="note-slide">
+                <div class="note-title">Kenapa aku masih suka sama kamu?</div>
+                <p>
+                  Cause you are different from the others wkwk, dari awal kenal
+                  juga aku udah ngerasa gituu. Dan prinsip aku kalo suka sama
+                  seseorang, aku ga bakal berhenti sebelum orang itu punya
+                  komitmen lain.
+                </p>
+              </div>
+
+              <div class="note-slide">
+                <p>
+                  Sebenernya kadang aku juga ngerasa kangen hehe, dulu kitaa
+                  pernah dekett, tapi sekarang aku ngerasa jauh secara personal,
+                  kadang tiap malem tuh aku suka kepikiran bahkan beberapa kali
+                  kebawa mimpi:) <br />
+                  Dulu waktu you like me, disitu aku bener-bener ngerasa mimpi
+                  indah, kek ga nyangka aja orang yang aku kagumi ternyata
+                  pernah suka ke aku jugaa. Kalo hidup aku dijadiin buku, i
+                  think that is one of the best part dan bakal aku baca berulang
+                  kali hehe.
+                </p>
+              </div>
+
+              <div class="note-slide">
+                <p>
+                  Aku tau kok perasaan kamu sekarang udah beda, dan mungkin ada
+                  orang yang lagi kamu kagumi saat ini. Maaf yaa sampe sekarang
+                  ternyata aku belum bisa ngelupain elu, aku udah berusaha buat
+                  nyibukin diri, tapi tetep aja perasaan itu selalu menyapa
+                  lagi:)
+                </p>
+              </div>
+
+              <div class="note-slide">
+                <p>
+                  Oleh karena ituu, akuu perlu bantuan elu, bantu gwa supaya gwa
+                  bisa lebih sadar dirii, akuu pengen jadi pribadi yang lebih
+                  baik. Aku ngerasa aku selalu ganggu, gajelas, suka aneh, dan
+                  mungkin bikin kamu ga nyaman, maaf yaa kalo cara aku
+                  ngedeketin elu bikin ga nyaman hehe. Tolong bantu aku ya caa,
+                  aku pengen ditampar sekalian biar aku lebih sadar diri dan ga
+                  terlalu maksain perasaan aku ke kamuu, meskipun aku pernah
+                  bilang "i will try hard for like u forever" sebenernya aku
+                  bisa nepatin janji itu sampai aku udah siap, tapi kalo ke
+                  kamunya jadi ga nyaman, mending aku ngelanggar janji itu wkwk.
+                </p>
+              </div>
+
+              <div class="note-slide">
+                <p class="note-desc">
+                  Bantu aku dengan cara mengisi gform berikut
+                </p>
+
+                <div class="cta-wrapper">
+                  <a
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSf_AMii-e_YIblj3fTTuyFT7J-t1E9kvZ5WtqFjaIeUKY1YQg/viewform"
+                    target="_blank"
+                    class="cta-btn-untold"
+                  >
+                    Klik disini ca
+                  </a>
+                </div>
+              </div>
+
+              <div class="slider-controls">
+                <button class="nav-btn" onclick="prevNote()">❮</button>
+                <div class="dots" id="dots"></div>
+                <button class="nav-btn" onclick="nextNote()">❯</button>
+              </div>
+
+              <div class="center-btn-container">
+                <button
+                  class="btn-back-untold"
+                  onclick="switchTab('main-menu')"
+                >
+                  Kembali ke Menu
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="music-wrapper-untold">
+            <div class="spotify-card-wide">
+              <div class="untold-album-cover">
+                <img src="cover-album.jpg" alt="Album Cover" />
+              </div>
+
+              <div class="untold-song-center">
+                <div class="untold-song-title">About Marsha's</div>
+                <div class="untold-song-artist">The 1975</div>
+
+                <div class="untold-progress-bar">
+                  <div class="untold-progress" id="untold-progress"></div>
+                </div>
+              </div>
+
+              <div class="untold-song-duration">
+                <span id="untold-current-time">0:00</span>
+                /
+                <span id="untold-duration">0:00</span>
+              </div>
+            </div>
+          </div>
+
+          <audio id="audio-untold" loop>
+            <source src="About-You.mp3" type="audio/mpeg" />
+          </audio>
+        </section>
+      </div>
+
+      <nav class="navbar">
+        <div class="nav-item active" id="nav-home" onclick="switchTab('home')">
+          <div class="nav-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+            </svg>
+          </div>
+          <span class="nav-text">Home</span>
+        </div>
+        <div class="nav-item" id="nav-playlist" onclick="switchTab('playlist')">
+          <div class="nav-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24">
+              <path
+                d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
+              />
+            </svg>
+          </div>
+          <span class="nav-text">Playlist</span>
+        </div>
+        <div class="nav-item" id="nav-exit" onclick="switchTab('main-menu')">
+          <div class="nav-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24">
+              <path
+                d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.11.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.11-.89-2-2-2z"
+              />
+            </svg>
+          </div>
+          <span class="nav-text">Exit</span>
+        </div>
+      </nav>
+    </div>
+
+    <script>
+      /* =========================================
+         1. MAIN APP LOGIC (SUKIIFY)
+         ========================================= */
+
+      let untoldyInitialized = false;
+
+      function switchTab(viewId) {
+        // Hide all views
+        document
+          .querySelectorAll(".view-section")
+          .forEach((el) => el.classList.add("hidden"));
+
+        // Navbar elements
+        const navbar = document.querySelector(".navbar");
+        const navHome = document.getElementById("nav-home");
+        const navPlaylist = document.getElementById("nav-playlist");
+        const navExit = document.getElementById("nav-exit");
+
+        // Reset Nav Active States
+        navHome.classList.remove("active");
+        navPlaylist.classList.remove("active");
+        navExit.classList.remove("active");
+
+        // Logic Switch
+        if (viewId === "home") {
+          document.getElementById("home-view").classList.remove("hidden");
+          navbar.classList.add("visible");
+          navHome.classList.add("active");
+          pauseUntoldAudio();
+        } else if (viewId === "playlist") {
+          document.getElementById("playlist-view").classList.remove("hidden");
+          navbar.classList.add("visible");
+          navPlaylist.classList.add("active");
+          pauseUntoldAudio();
+        } else if (viewId === "main-menu") {
+          document.getElementById("main-menu-view").classList.remove("hidden");
+          navbar.classList.remove("visible");
+          pauseUntoldAudio();
+        } else if (viewId === "untoldy") {
+          document.getElementById("untoldy-view").classList.remove("hidden");
+          navbar.classList.remove("visible");
+          pauseMainAudio();
+
+          if (!untoldyInitialized) {
+            document.getElementById("musicOverlay").style.display = "flex";
+          }
+        }
+      }
+
+      function pauseMainAudio() {
+        if (isPlaying) togglePlay();
+      }
+
+      function pauseUntoldAudio() {
+        if (untoldAudio) {
+          untoldAudio.pause();
+        }
+      }
+
+      /* --- MAIN MUSIC PLAYER LOGIC --- */
+      const songsData = [
+        {
+          title: "Sempurna",
+          artist: "Andra and The Backbone",
+          img: "gambar_1.jpg",
+          src: "lagu_1.m4a",
+        },
+        {
+          title: "About You",
+          artist: "The 1975",
+          img: "gambar_2.jpg",
+          src: "lagu_2.m4a",
+        },
+        {
+          title: "love.",
+          artist: "wave to earth",
+          img: "gambar_3.jpg",
+          src: "lagu_3.m4a",
+        },
+        {
+          title: "Message In a Bottle",
+          artist: "Taylor Swift",
+          img: "gambar_4.jpg",
+          src: "lagu_4.m4a",
+        },
+        {
+          title: "Perfect",
+          artist: "One Direction",
+          img: "gambar_5.jpg",
+          src: "lagu_5.m4a",
+        },
+        {
+          title: "A Thousand Years",
+          artist: "Cristina Perri",
+          img: "gambar_6.jpg",
+          src: "lagu_6.m4a",
+        },
+        {
+          title: "Rindu Sendiri",
+          artist: "Iqbaal Ramadhan",
+          img: "gambar_7.jpg",
+          src: "lagu_7.m4a",
+        },
+        {
+          title: "Sofia",
+          artist: "Clario",
+          img: "gambar_8.jpg",
+          src: "lagu_8.m4a",
+        },
+        {
+          title: "Hujan",
+          artist: "Utopia",
+          img: "gambar_9.jpg",
+          src: "lagu_9.m4a",
+        },
+        {
+          title: "Take A Chance With Me",
+          artist: "NIKI",
+          img: "gambar_10.jpg",
+          src: "lagu_10.m4a",
+        },
+        // ... Copy paste blok di atas (dari kurung kurawal '{' sampai '},')
+        // untuk menambah lagu sebanyak yang kamu mau.
+      ];
+
+      function playSpecificSong(index) {
+        if (index < songsData.length) {
+          currentSongIndex = index;
+          loadSong(currentSongIndex);
+          playSong();
+          switchTab("playlist");
+        } else {
+          alert("Lagu belum ditambahkan di kode!");
+        }
+      }
+
+      const audio = new Audio();
+      let currentSongIndex = 0;
+      let isPlaying = false;
+
+      const playerImg = document.getElementById("player-img");
+      const playerTitle = document.getElementById("player-title");
+      const playerArtist = document.getElementById("player-artist");
+      const btnPlay = document.getElementById("btn-play");
+      const iconPlay = document.getElementById("icon-play");
+      const iconPause = document.getElementById("icon-pause");
+      const btnNext = document.getElementById("btn-next");
+      const btnPrev = document.getElementById("btn-prev");
+      const progressFill = document.getElementById("progress-fill");
+      const progressContainer = document.getElementById("progress-container");
+      const currentTimeEl = document.getElementById("current-time");
+      const totalDurationEl = document.getElementById("total-duration");
+      const playlistContent = document.getElementById("playlist-content");
+      const albumContainer = document.getElementById("album-container");
+      const playlistHeader = document.getElementById("playlist-header");
+
+      if (playlistHeader)
+        playlistHeader.innerText = `All Songs (${songsData.length})`;
+
+      function loadSong(index) {
+        if (songsData.length === 0) return;
+        const song = songsData[index];
+        playerTitle.innerText = song.title;
+        playerArtist.innerText = song.artist;
+        playerImg.src = song.img;
+        audio.src = song.src;
+        progressFill.style.width = "0%";
+        currentTimeEl.innerText = "0:00";
+        totalDurationEl.innerText = "Loading...";
+        renderPlaylist();
+      }
+
+      function togglePlay() {
+        if (isPlaying) {
+          pauseSong();
+        } else {
+          playSong();
+        }
+      }
+      function playSong() {
+        isPlaying = true;
+        audio.play().catch((e) => console.log("Error:", e));
+        iconPlay.style.display = "none";
+        iconPause.style.display = "block";
+        albumContainer.classList.add("playing");
+      }
+      function pauseSong() {
+        isPlaying = false;
+        audio.pause();
+        iconPlay.style.display = "block";
+        iconPause.style.display = "none";
+        albumContainer.classList.remove("playing");
+      }
+      function nextSong() {
+        currentSongIndex = (currentSongIndex + 1) % songsData.length;
+        loadSong(currentSongIndex);
+        playSong();
+      }
+      function prevSong() {
+        currentSongIndex =
+          (currentSongIndex - 1 + songsData.length) % songsData.length;
+        loadSong(currentSongIndex);
+        playSong();
+      }
+
+      function updateProgress(e) {
+        const { duration, currentTime } = e.srcElement;
+        if (isNaN(duration)) return;
+        const progressPercent = (currentTime / duration) * 100;
+        progressFill.style.width = `${progressPercent}%`;
+        currentTimeEl.innerText = formatTime(currentTime);
+        totalDurationEl.innerText = formatTime(duration);
+      }
+      function setProgress(e) {
+        const width = this.clientWidth;
+        const clickX = e.offsetX;
+        const duration = audio.duration;
+        audio.currentTime = (clickX / width) * duration;
+      }
+      function formatTime(seconds) {
+        const min = Math.floor(seconds / 60);
+        const sec = Math.floor(seconds % 60);
+        return `${min}:${sec < 10 ? "0" : ""}${sec}`;
+      }
+      function renderPlaylist() {
+        playlistContent.innerHTML = "";
+        songsData.forEach((song, index) => {
+          const item = document.createElement("div");
+          item.classList.add("playlist-item");
+          if (index === currentSongIndex) item.classList.add("active");
+          item.addEventListener("click", () => {
+            currentSongIndex = index;
+            loadSong(currentSongIndex);
+            playSong();
+          });
+          item.innerHTML = `
+                    <div class="thumb-small"><img src="${
+                      song.img
+                    }" loading="lazy"></div>
+                    <div class="track-info"><div class="track-title">${
+                      song.title
+                    }</div><div class="track-artist">${song.artist}</div></div>
+                    ${
+                      index === currentSongIndex
+                        ? '<svg class="playing-indicator" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>'
+                        : '<div class="track-duration">Play</div>'
+                    }
+                `;
+          playlistContent.appendChild(item);
+        });
+      }
+
+      btnPlay.addEventListener("click", togglePlay);
+      btnNext.addEventListener("click", nextSong);
+      btnPrev.addEventListener("click", prevSong);
+      audio.addEventListener("timeupdate", updateProgress);
+      audio.addEventListener("ended", nextSong);
+      progressContainer.addEventListener("click", setProgress);
+
+      if (songsData.length > 0) {
+        loadSong(currentSongIndex);
+      }
+
+      /* =========================================
+         2. UNTOLDY LOGIC (MERGED)
+         ========================================= */
+
+      const notes = document.querySelectorAll(".note-slide");
+      const dotsContainer = document.getElementById("dots");
+      let currentNote = 0;
+
+      function createDots() {
+        dotsContainer.innerHTML = "";
+        notes.forEach((_, i) => {
+          const dot = document.createElement("div");
+          dot.className = "dot" + (i === 0 ? " active" : "");
+          dotsContainer.appendChild(dot);
+        });
+      }
+
+      function showNote(index) {
+        notes.forEach((note, i) => {
+          note.classList.toggle("active", i === index);
+        });
+        document.querySelectorAll(".dot").forEach((dot, i) => {
+          dot.classList.toggle("active", i === index);
+        });
+      }
+
+      function nextNote() {
+        currentNote = (currentNote + 1) % notes.length;
+        showNote(currentNote);
+      }
+
+      function prevNote() {
+        currentNote = (currentNote - 1 + notes.length) % notes.length;
+        showNote(currentNote);
+      }
+
+      createDots();
+      showNote(currentNote);
+
+      // Untold Audio Player Variables
+      const untoldAudio = document.getElementById("audio-untold");
+      const overlay = document.getElementById("musicOverlay");
+      const untoldProgress = document.getElementById("untold-progress");
+      const untoldCurrentTimeEl = document.getElementById(
+        "untold-current-time"
+      );
+      const untoldDurationEl = document.getElementById("untold-duration");
+
+      untoldAudio.volume = 0;
+
+      // Fade In Logic
+      function fadeInUntoldAudio(targetVolume = 0.8, duration = 3000) {
+        const stepTime = 50;
+        const steps = duration / stepTime;
+        const volumeStep = targetVolume / steps;
+        let currentVolume = 0;
+
+        const fade = setInterval(() => {
+          currentVolume += volumeStep;
+          if (currentVolume >= targetVolume) {
+            currentVolume = targetVolume;
+            clearInterval(fade);
+          }
+          untoldAudio.volume = currentVolume;
+        }, stepTime);
+      }
+
+      // START MUSIC ON OVERLAY CLICK
+      overlay.addEventListener("click", () => {
+        untoldyInitialized = true;
+        untoldAudio.currentTime = 0;
+        untoldAudio.play();
+        fadeInUntoldAudio(0.8, 3000);
+        overlay.style.opacity = "0";
+        setTimeout(() => {
+          overlay.style.display = "none";
+        }, 400);
+      });
+
+      // Update progress Untold
+      untoldAudio.addEventListener("timeupdate", () => {
+        if (untoldAudio.duration) {
+          untoldProgress.style.width =
+            (untoldAudio.currentTime / untoldAudio.duration) * 100 + "%";
+          untoldCurrentTimeEl.textContent = formatTime(untoldAudio.currentTime);
+        }
+      });
+
+      // Duration Untold
+      untoldAudio.addEventListener("loadedmetadata", () => {
+        untoldDurationEl.textContent = formatTime(untoldAudio.duration);
+      });
+    </script>
+  </body>
+</html>
